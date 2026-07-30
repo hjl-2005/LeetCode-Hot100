@@ -1,8 +1,31 @@
 package com.leetcode.linkedlist;
 
+/// [K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group/solutions/248591/k-ge-yi-zu-fan-zhuan-lian-biao-by-leetcode-solutio/?envType=study-plan-v2&envId=top-100-liked)
 public class LeetCode25 {
+    public ListNode reverseKGroupRecursive(ListNode head, int k) {
+        // 边界条件，链表长度小于k直接返回head
+        ListNode pNext = head;
+        for (int i = 0; i < k; ++i) {
+            if (pNext == null) {
+                return head;
+            }
+            pNext = pNext.next;
+        }
+        // 反转 k 个链表。递归返回反转后的newHead，并连接上一层递归返回的头结点
+        int time = k;
+        ListNode cur = head;
+        ListNode pre = null;
+        while (cur != null && time-- > 0) {
+            ListNode temp = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = temp;
+        }
+        head.next = reverseKGroupRecursive(cur, k);
+        return pre;
+    }
+
     public ListNode reverseKGroup(ListNode head, int k) {
-        // 创建dummy 头节点
         ListNode dummy = new ListNode(0, head);
         ListNode pre = dummy; // pre：代表当前翻转链表的前继节点
         ListNode end = dummy; // end：代表当前翻转链表的尾节点

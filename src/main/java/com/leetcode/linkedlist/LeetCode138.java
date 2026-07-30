@@ -1,63 +1,46 @@
 package com.leetcode.linkedlist;
 
 import java.util.HashMap;
+import java.util.Map;
 
-/// [力扣题解](https://leetcode.cn/problems/copy-list-with-random-pointer/solutions/2361362/138-fu-zhi-dai-sui-ji-zhi-zhen-de-lian-b-6jeo/?envType=study-plan-v2&envId=top-100-liked)
+/// [复制带随机指针的链表](https://leetcode.cn/problems/copy-list-with-random-pointer/solutions/2361362/138-fu-zhi-dai-sui-ji-zhi-zhen-de-lian-b-6jeo/?envType=study-plan-v2&envId=top-100-liked)
 public class LeetCode138 {
-    public Node copyRandomListWithHash(Node head) {
-        // 检验参数
-        if (head == null) {
-            return null;
-        }
-        // 构建原节点和对应新节点的Map
-        HashMap<Node, Node> map = new HashMap<>();
-        Node cur = head;
-        while (cur != null) {
-            map.put(cur, new Node(cur.val));
-            cur = cur.next;
-        }
-        // 对照原链表来建立新链表的关系
-        cur = head;
-        while (cur != null) {
-            map.get(cur).next = map.get(cur.next);
-            map.get(cur).random = map.get(cur.random);
-            cur = cur.next;
+    Map<Node, Node> map = new HashMap<>();
+
+    public Node copyRandomListRecursive(Node head) {
+        if (head == null) return null;
+        if (!map.containsKey(head)) {
+            Node copyNode = new Node(head.val);
+            map.put(head, copyNode);
+            copyNode.next = copyRandomListRecursive(head.next);
+            copyNode.random = copyRandomListRecursive(head.random);
         }
         return map.get(head);
     }
 
     /**
-     * 空间复杂度O(1)
+     * 在原节点后插入复制节点，利用原节点.random.next 定位复制节点的 random，最后拆分。
      */
     public Node copyRandomList(Node head) {
         if (head == null) return null;
-        // 复制原链表的每一个节点并加在其后面
-        Node cur = head;
-        while (cur != null) {
-            Node newNode = new Node(cur.val);
-            newNode.next = cur.next;
-            cur.next = newNode;
-            cur = newNode.next;
+        // 在每个原节点后插入复制节点，便于通过原节点的 random 找到复制节点的 random
+        for (Node node = head; node != null; node = node.next.next) {
+            Node newNode = new Node(node.val);
+            newNode.next = node.next;
+            node.next = newNode;
         }
-        // 完成各个新节点的 random 指向
-        cur = head;
-        while (cur != null) {
-            if (cur.random != null) {
-                cur.next.random = cur.random.next;
-            }
-            cur = cur.next.next;
+        // 设置复制节点的 random（注意判空）
+        for (Node node = head; node != null; node = node.next.next) {
+            Node randomNode = node.random;
+            node.next.random = randomNode != null ? randomNode.next : null;
         }
-        // 分离原列表和新列表
-        Node res = head.next;
-        Node pre = head;
-        cur = head.next;
-        while (pre.next.next != null) {
-            pre.next = pre.next.next;
-            cur.next = cur.next.next;
-            pre = pre.next;
-            cur = cur.next;
+        // 拆分链表
+        Node newHead = head.next;
+        for (Node node = head; node != null; node = node.next) {
+            Node temp = node.next;
+            node.next = node.next.next;
+            temp.next = temp.next != null ? temp.next.next : null;
         }
-        pre.next = null;// 单独处理原链表尾节点
-        return res;
+        return newHead;
     }
 }

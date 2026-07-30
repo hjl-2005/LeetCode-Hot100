@@ -1,23 +1,16 @@
 package com.leetcode.linkedlist;
 
-/**
- * 直接使用快慢指针来实现（当然，使用哈希表就非常简单了
- */
+/// [环形链表](https://leetcode.cn/problems/linked-list-cycle/solutions/440042/huan-xing-lian-biao-by-leetcode-solution/?envType=study-plan-v2&envId=top-100-liked)
 public class LeetCode141 {
+    /**
+     * 快慢指针，秒了
+     */
     public boolean hasCycle(ListNode head) {
-        // 判断链表是否为空
-        if (head == null || head.next == null) {
-            return false;
-        }
-
-        ListNode slow = head;
-        ListNode fast = head;
+        ListNode slow = head, fast = head;
         while (fast != null && fast.next != null) {
-            fast = fast.next.next;
             slow = slow.next;
-            if (slow == fast) {
-                return true;
-            }
+            fast = fast.next.next;
+            if (slow == fast) return true;
         }
         return false;
     }

@@ -1,26 +1,28 @@
 package com.leetcode.linkedlist;
 
-/// 还是使用快慢指针，因为空间复杂度为O(1)。（哈希表实现将会非常简单
-/// [力扣题解](https://leetcode.cn/problems/linked-list-cycle-ii/solutions/441131/huan-xing-lian-biao-ii-by-leetcode-solution/?envType=study-plan-v2&envId=top-100-liked)
+/// [环形链表 II](https://leetcode.cn/problems/linked-list-cycle-ii/solutions/441131/huan-xing-lian-biao-ii-by-leetcode-solution/?envType=study-plan-v2&envId=top-100-liked)
 public class LeetCode142 {
+    /**
+     * 快慢指针求环入口。
+     * 设 a = 起点到环入口距离，b = 环长。慢指针每次1步，快指针每次2步。
+     * 1. 首次相遇时，慢指针在环内走 x 步，快指针比慢指针多走 nb 步（n 为正整数）。
+     * 2. 由路程关系：2(a + x) = a + nb + x，化简得 a + x = nb。
+     * 3. 该等式表明：从相遇点继续前进 a 步，恰好到达环入口。
+     * 4. 据此，取一新指针置于起点，与相遇点的慢指针同速移动，二者再次相遇的位置即为环入口。
+     */
     public ListNode detectCycle(ListNode head) {
-        // 检验链表是否为空
-        if (head == null || head.next == null) {
-            return null;
-        }
         ListNode slow = head;
         ListNode fast = head;
         while (fast != null && fast.next != null) {
-            fast = fast.next.next;
             slow = slow.next;
-            // 通过数学推断，得出：相遇后，安排一个从头节点开始移动的节点和慢指针一起移动，他们相遇的点就是环的入口
+            fast = fast.next.next;
             if (slow == fast) {
-                ListNode pre = head;
-                while (pre != slow) {
-                    pre = pre.next;
+                ListNode p = head;
+                while (p != slow) {
+                    p = p.next;
                     slow = slow.next;
                 }
-                return pre;
+                return p;
             }
         }
         return null;
